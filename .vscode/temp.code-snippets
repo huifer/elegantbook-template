@@ -1,0 +1,18 @@
+{
+	"Latex Java Code Template": {
+		"scope": "latex,tex",
+		"prefix": "code",
+		"body": [
+		"\\begin{lstlisting}[language=java]\r\n${1}\r\n\\end{lstlisting}"
+		],
+		"description": "Latex Java Code Template"
+	},
+	"Latex Image Code Template": {
+		"scope": "latex,tex",
+		"prefix": "img",
+		"body": [
+			"\\begin{figure}[htb]\r\n   \\centering\r\n\\includegraphics[scale=0.5]  {图片地址}\r\n\\caption{\\label{3} 图片名称} \r\n\\end{figure}"
+		],
+		"description": "Latex Image Code Template"
+	}
+}

@@ -1,0 +1,56 @@
+%!TEX program = xelatex
+\documentclass[color=black,lang=cn,a4paper,UTF8]{elegantbook}
+\usepackage[UTF8]{ctex}
+\usepackage{amssymb}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{subfigure}
+\usepackage{hyperref}
+\usepackage{color}
+
+
+% title info
+\title{主标题}
+\subtitle{次级标题}
+
+% bio info
+\author{ZhangSan}
+\date{\today}
+
+\version{1.00}
+
+
+\definecolor{mygreen}{rgb}{0,0.6,0}
+\definecolor{mygray}{rgb}{0.5,0.5,0.5}
+\definecolor{mymauve}{rgb}{0.58,0,0.82}
+
+
+\lstset{ %
+  backgroundcolor=\color{white},   % choose the background color
+  basicstyle=\footnotesize,        % size of fonts used for the code
+  breaklines=true,                 % automatic line breaking only at whitespace
+  captionpos=b,                    % sets the caption-position to bottom
+  commentstyle=\color{mygreen},    % comment style
+  escapeinside={\%*}{*)},          % if you want to add LaTeX within your code
+  keywordstyle=\color{blue},       % keyword style
+  stringstyle=\color{mymauve},     % string literal style
+  numbers=left, %行号在左侧显示
+  numberstyle= \small,%行号字体
+}
+
+
+
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\mainmatter
+\hypersetup{pageanchor=true}
+
+
+\include{ch/ch01}
+
+\end{document}
