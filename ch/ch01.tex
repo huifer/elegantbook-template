@@ -1,33 +1,55 @@
 \chapter{char1}
 章节1
 
-\begin{lstlisting}[language=java]
-/**
-    * This is a doc comment.
-    */
-package com.ociweb.jnb.lombok;
 
-import java.util.Date;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NonNull;
+\section{char1.1}
+内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容
+\subsection{char1.1.1}
+内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容
 
-$$@Data
-$$@EqualsAndHashCode(exclude={"address","city","state","zip"})
-public class Person {
-    enum Gender { Male, Female }
 
-    // another comment
+具体处理代码如\ref{单一任务处理流程}下。
 
-    @NonNull private String firstName;
-    %%@NonNull%% private String lastName;
-    %%@NonNull%% private final Gender gender;
-    %%@NonNull%% private final Date dateOfBirth;
+\begin{lstlisting}[language=java,label={单一任务处理流程},caption={单一任务处理流程}]
+	@Override
+	public void run() {
+		while (true) {
+			// 取最小对象
+			TaskDetail taskDetail = bucketService.getMin(taskType);
+			log.info("处理任务类型 = [{}], taskDetail= [{}]", taskType, taskDetail);
+			// 最小对象为空不处理
+			if (taskDetail == null) {
+				sleep();
+				continue;
+			}
+			// 最小对象的任务开始时间大于当前时间不处理
+			if (taskDetail.getDelayTime() > System.currentTimeMillis()) {
+				sleep();
+				continue;
+			}
 
-    private String ssn;
-    private String address;
-    private String city;
-    private String state;
-    private String zip;
-}
+			DelayQueueJob delayQueue = poolService.getDelayQueue(taskDetail.getTaskId());
+			// 延迟任务信息不存在删除最小对象
+			if (delayQueue == null) {
+				bucketService.del(taskType, taskDetail);
+				continue;
+			}
+
+			if (delayQueue.getDelayTime() <= System.currentTimeMillis()) {
+				log.info("执行任务, dt = [{}]", delayQueue);
+				boolean lock = redisLockHelper.get(PK + delayQueue.getTaskId(), delayQueue.getTaskId(), 10);
+				if (lock) {
+					for (DelayQueueJobHandler delayQueueJobHandler : delayQueueJobHandlers) {
+						delayQueueJobHandler.work(delayQueue);
+					}
+					bucketService.del(taskType, taskDetail);
+					poolService.deleteDelayQueue(taskDetail.getTaskId());
+					this.delayQueueInfoMapper.update(taskDetail.getTaskId());
+					redisLockHelper.release(PK + delayQueue.getTaskId(), delayQueue.getTaskId());
+				}
+
+			}
+		}
+	}
+
 \end{lstlisting}
